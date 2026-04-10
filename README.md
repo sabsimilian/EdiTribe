@@ -38,5 +38,5 @@ It is built to make large sample workflows practical: import audio from many for
 
 ### Install
 
-Just download the electribe.exe from this page, hit install and you´re good to go - as simple as that
+Just download the Editribe.Setup.0.1.0.exe from this page, hit install and you´re good to go - as simple as that
 
