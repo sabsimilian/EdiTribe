@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+src/ui/node_modules/
+
+# Build outputs
+dist/
+src/ui/build/
+
+# Temp files
+.tmp-e2s-validate/
+*.tmp
+.tmp_ignore
+x.tmp
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/

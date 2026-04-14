@@ -1,0 +1,53 @@
+{
+  "name": "korg-manager",
+  "version": "0.1.1",
+  "main": "main.js",
+  "description": "Korg Electribe 2S Sample Manager",
+  "scripts": {
+    "start": "cd src/ui && npm run build && cd ../.. && npx electron .",
+    "build": "cd src/ui && npm run build",
+    "dist": "electron-builder",
+    "e2s:diff": "node scripts/e2s-diff.js"
+  },
+  "build": {
+    "appId": "com.editribe.korgmanager",
+    "productName": "Editribe",
+    "copyright": "Copyright © 2026",
+    "files": [
+      "main.js",
+      "preload.js",
+      "scripts/**",
+      "src/ui/build/**",
+      "IconRed.png"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "IconRed.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "directories": {
+      "buildResources": ".",
+      "output": "dist"
+    }
+  },
+  "author": "Editribe",
+  "devDependencies": {
+    "concurrently": "^8.0.0",
+    "electron": "^29.0.0",
+    "electron-builder": "^24.0.0",
+    "png-to-ico": "^3.0.1",
+    "wait-on": "^7.0.1"
+  }
+}
