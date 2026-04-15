@@ -7,6 +7,9 @@
     "start": "cd src/ui && npm run build && cd ../.. && npx electron .",
     "build": "cd src/ui && npm run build",
     "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac zip",
+    "dist:mac:dmg": "mkdir -p .tmp-bin && printf '#!/bin/sh\\nexec /usr/bin/python3 \"$@\"\\n' > .tmp-bin/python && chmod +x .tmp-bin/python && PATH=\"$(pwd)/.tmp-bin:$PATH\" electron-builder --mac dmg",
+    "dist:win": "electron-builder --win",
     "e2s:diff": "node scripts/e2s-diff.js"
   },
   "build": {
@@ -29,6 +32,19 @@
           ]
         }
       ],
+      "icon": "IconRed.png"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.music",
       "icon": "IconRed.png"
     },
     "nsis": {

@@ -38,5 +38,25 @@ It is built to make large sample workflows practical: import audio from many for
 
 ### Install
 
-Just download the latest `Editribe.Setup.exe` from the [Releases](https://github.com/sabsimilian/EdiTribe/releases) page, hit install and you´re good to go - as simple as that
+#### Windows
+
+Download the latest `Editribe.Setup.exe` from the [Releases](https://github.com/sabsimilian/EdiTribe/releases) page and run the installer.
+
+#### macOS
+
+Prebuilt macOS artifacts are not published in upstream releases yet.
+
+Build locally:
+
+1. Install Node.js 18+.
+2. Install dependencies:
+  - `npm install`
+  - `cd src/ui && npm install && cd ../..`
+3. Build and package for macOS:
+  - `npm run dist:mac`
+4. Find output artifacts in `dist/` (`.zip` for Intel and Apple Silicon).
+
+Optional DMG build:
+
+- `npm run dist:mac:dmg`
 

@@ -485,8 +485,8 @@ function App() {
   const convertExternalAudioToSample = async (filePath: string, originalName: string, originalSize: number): Promise<Sample | null> => {
     if (!window.electronAPI?.saveAudioBufferAsWav) return null;
     try {
-      const normalized = filePath.replace(/\\/g, '/');
-      const fileUrl = `file:///${encodeURI(normalized).replace(/#/g, '%23')}`;
+      const fileUrl = toFileUrlFromFsPath(filePath);
+      if (!fileUrl) return null;
       const response = await fetch(fileUrl);
       const arrayBuffer = await response.arrayBuffer();
       const ctx = new AudioContext();
@@ -515,6 +515,21 @@ function App() {
     }
   };
 
+  const toFileUrlFromFsPath = (value: string): string | null => {
+    if (!value) return null;
+    if (value.startsWith('file://')) return value.replace(/#/g, '%23');
+
+    const normalized = value.replace(/\\/g, '/');
+    if (/^[a-zA-Z]:\//.test(normalized)) {
+      return `file:///${encodeURI(normalized).replace(/#/g, '%23')}`;
+    }
+    if (normalized.startsWith('/')) {
+      return `file://${encodeURI(normalized).replace(/#/g, '%23')}`;
+    }
+
+    return null;
+  };
+
   const resolvePlaybackPath = async (sample: Sample): Promise<string | null> => {
     if (!sample) return null;
 
@@ -530,10 +545,9 @@ function App() {
 
     const p = sample.path;
     if (!p) return null;
-    // Convert absolute Windows paths to a properly escaped file URL (important for # in folder names).
-    if (/^[a-zA-Z]:[\\/]/.test(p)) {
-      const normalized = p.replace(/\\/g, '/');
-      return `file:///${encodeURI(normalized).replace(/#/g, '%23')}`;
+    // Convert absolute filesystem paths to properly escaped file URLs (important for # in folder names).
+    if (/^[a-zA-Z]:[\\/]/.test(p) || p.startsWith('/')) {
+      return toFileUrlFromFsPath(p);
     }
     if (p.startsWith('file://')) {
       return p.replace(/#/g, '%23');
@@ -543,11 +557,17 @@ function App() {
 
   const toFsPath = (value: string): string | null => {
     if (!value) return null;
-    if (/^[a-zA-Z]:[\\/]/.test(value)) return value;
-    if (value.startsWith('file:///')) {
-      const decoded = decodeURI(value.replace('file:///', ''));
-      if (/^[a-zA-Z]:\//.test(decoded)) {
-        return decoded.replace(/\//g, '\\');
+    if (/^[a-zA-Z]:[\\/]/.test(value) || value.startsWith('/')) return value;
+    if (value.startsWith('file://')) {
+      try {
+        const url = new URL(value);
+        const decodedPath = decodeURIComponent(url.pathname);
+        if (/^\/[a-zA-Z]:\//.test(decodedPath)) {
+          return decodedPath.slice(1).replace(/\//g, '\\');
+        }
+        return decodedPath;
+      } catch {
+        return null;
       }
     }
     return null;

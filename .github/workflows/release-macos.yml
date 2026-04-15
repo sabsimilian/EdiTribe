@@ -1,0 +1,74 @@
+name: Release macOS Artifacts
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            src/ui/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install UI dependencies
+        run: npm --prefix src/ui install
+
+      - name: Build UI assets
+        run: npm run build
+
+      - name: Build macOS ZIP artifacts
+        run: npm run dist:mac -- --publish never
+
+      - name: Build macOS DMG artifacts
+        run: npm run dist:mac:dmg -- --publish never
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-artifacts
+          if-no-files-found: error
+          path: |
+            dist/*.zip
+            dist/*.zip.blockmap
+            dist/*.dmg
+            dist/*.dmg.blockmap
+            dist/latest-mac.yml
+
+  publish-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build-macos
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: macos-artifacts
+          path: release-assets
+
+      - name: Publish GitHub Release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release-assets/*.zip
+            release-assets/*.zip.blockmap
+            release-assets/*.dmg
+            release-assets/*.dmg.blockmap
+            release-assets/latest-mac.yml

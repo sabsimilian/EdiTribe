@@ -8,6 +8,7 @@ src/ui/build/
 
 # Temp files
 .tmp-e2s-validate/
+.tmp-bin/
 *.tmp
 .tmp_ignore
 x.tmp
