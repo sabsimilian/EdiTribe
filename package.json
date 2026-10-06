@@ -1,6 +1,6 @@
 {
   "name": "korg-manager",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "main.js",
   "description": "Korg Electribe 2S Sample Manager",
   "scripts": {
@@ -8,8 +8,9 @@
     "build": "cd src/ui && npm run build",
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac zip",
-    "dist:mac:dmg": "mkdir -p .tmp-bin && printf '#!/bin/sh\\nexec /usr/bin/python3 \"$@\"\\n' > .tmp-bin/python && chmod +x .tmp-bin/python && PATH=\"$(pwd)/.tmp-bin:$PATH\" electron-builder --mac dmg",
+    "dist:mac:dmg": "mkdir -p .tmp-bin && printf '#!/bin/sh\\nexec /usr/bin/python3 \"$@\"\\n' > .tmp-bin/python && chmod +x .tmp-bin/python && PATH=\"$(pwd)/.tmp-bin:$PATH\" electron-builder --mac dmg --x64 --arm64",
     "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
     "e2s:diff": "node scripts/e2s-diff.js"
   },
   "build": {
@@ -45,6 +46,15 @@
         }
       ],
       "category": "public.app-category.music",
+      "icon": "IconRed.png"
+    },
+    "linux": {
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] },
+        { "target": "deb", "arch": ["x64"] },
+        { "target": "rpm", "arch": ["x64"] }
+      ],
+      "category": "AudioVideo",
       "icon": "IconRed.png"
     },
     "nsis": {

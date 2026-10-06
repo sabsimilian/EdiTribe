@@ -1,4 +1,4 @@
-name: Release macOS Artifacts
+name: Release Desktop Artifacts
 
 on:
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
         run: npm run build
 
       - name: Build macOS ZIP artifacts
-        run: npm run dist:mac -- --publish never
+        run: npm run dist:mac -- --publish never --x64 --arm64
 
       - name: Build macOS DMG artifacts
         run: npm run dist:mac:dmg -- --publish never
@@ -49,9 +49,46 @@ jobs:
             dist/*.dmg.blockmap
             dist/latest-mac.yml
 
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            src/ui/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install UI dependencies
+        run: npm --prefix src/ui ci
+
+      - name: Build UI assets
+        run: npm run build
+
+      - name: Build Linux artifacts
+        run: npm run dist:linux -- --publish never
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifacts
+          if-no-files-found: error
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.rpm
+
   publish-release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build-macos
+    needs: [build-macos, build-linux]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -60,6 +97,12 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: macos-artifacts
+          path: release-assets
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: linux-artifacts
           path: release-assets
 
       - name: Publish GitHub Release assets
@@ -72,3 +115,6 @@ jobs:
             release-assets/*.dmg
             release-assets/*.dmg.blockmap
             release-assets/latest-mac.yml
+            release-assets/*.AppImage
+            release-assets/*.deb
+            release-assets/*.rpm

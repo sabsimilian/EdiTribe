@@ -44,7 +44,11 @@ Download the latest `Editribe.Setup.exe` from the [Releases](https://github.com/
 
 #### macOS
 
-Prebuilt macOS artifacts are not published in upstream releases yet.
+Download the `.dmg` for a guided install or the `.zip` for a portable app from the [Releases](https://github.com/sabsimilian/EdiTribe/releases) page. Both Intel and Apple Silicon builds are provided.
+
+#### Linux
+
+Linux x64 releases include an AppImage, a Debian/Ubuntu `.deb`, and an RPM for Fedora/openSUSE. Download the package for your distribution from the [Releases](https://github.com/sabsimilian/EdiTribe/releases) page.
 
 Build locally:
 
@@ -59,4 +63,9 @@ Build locally:
 Optional DMG build:
 
 - `npm run dist:mac:dmg`
+
+Build Linux packages on Linux:
+
+- `npm run dist:linux`
+- Find `.AppImage`, `.deb`, and `.rpm` artifacts in `dist/`.
 
