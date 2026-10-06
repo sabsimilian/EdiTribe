@@ -55,6 +55,7 @@
         { "target": "rpm", "arch": ["x64"] }
       ],
       "category": "AudioVideo",
+      "maintainer": "Editribe <202239399+sabsimilian@users.noreply.github.com>",
       "icon": "IconRed.png"
     },
     "nsis": {
